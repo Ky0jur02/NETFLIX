@@ -1,0 +1,1393 @@
+/* =========================================================
+   STREAMFLIX - style.css
+   ========================================================= */
+
+/* =========================================================
+   1. VARIABLES
+   ========================================================= */
+
+:root {
+    --bg: #0d0d10;
+    --surface: #1a1a20;
+    --surface-light: #2a2a33;
+
+    --text: #f4f4f6;
+    --text-muted: #a1a1ab;
+
+    --accent: #e5303f;
+    --accent-hover: #ff4655;
+    --gold: #f3c257;
+
+    --nav-height: 68px;
+    --page-padding: 4%;
+    --card-width: 200px;
+    --radius: 10px;
+
+    --font-heading: "Sora", "Segoe UI", Arial, sans-serif;
+    --font-body: "DM Sans", "Segoe UI", Arial, sans-serif;
+}
+
+
+/* =========================================================
+   2. RESET AND BASE
+   ========================================================= */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+
+/* =========================================================
+   3. NAVIGATION
+   ========================================================= */
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+
+    z-index: 100;
+
+    height: var(--nav-height);
+    padding: 0 var(--page-padding);
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: linear-gradient(to bottom,
+            rgba(0, 0, 0, 0.9),
+            rgba(0, 0, 0, 0));
+
+    transition: background 0.3s ease;
+}
+
+.navbar.scrolled {
+    background: rgba(10, 10, 12, 0.96);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 2.2rem;
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.45rem;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-links a {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--text);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.search-box {
+    display: flex;
+    align-items: center;
+
+    border: 1px solid transparent;
+    border-radius: 6px;
+
+    transition:
+        background 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.search-box input {
+    width: 0;
+    padding: 0;
+
+    opacity: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: var(--text);
+
+    font: inherit;
+    font-size: 0.95rem;
+
+    transition:
+        width 0.3s ease,
+        opacity 0.3s ease,
+        padding 0.3s ease;
+}
+
+.search-box input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-box.active {
+    background: rgba(0, 0, 0, 0.75);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.search-box.active input {
+    width: 220px;
+    padding: 0.45rem 0.3rem 0.45rem 0.8rem;
+    opacity: 1;
+}
+
+.search-btn {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.1rem;
+}
+
+
+/* =========================================================
+   PROFILE
+   ========================================================= */
+
+.profile-btn {
+    width: 34px;
+    height: 34px;
+
+    border-radius: 6px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(135deg,
+            var(--accent),
+            #8f1d2a);
+
+    transition: transform 0.2s ease;
+}
+
+.profile-btn:hover {
+    transform: scale(1.08);
+}
+
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+
+.menu-toggle {
+    display: none;
+
+    width: 40px;
+    height: 40px;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 1.5rem;
+}
+
+
+/* =========================================================
+   4. HERO
+   ========================================================= */
+
+.hero {
+    position: relative;
+
+    min-height: 88vh;
+
+    display: flex;
+    align-items: flex-end;
+
+    padding:
+        calc(var(--nav-height) + 2rem) var(--page-padding) 9rem;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(135deg,
+            #2a0c12,
+            var(--bg));
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0;
+
+    background-size: cover;
+    background-position: center center;
+
+    transition: background-image 0.4s ease;
+}
+
+.hero::after {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(to right,
+            rgba(13, 13, 16, 0.94) 0%,
+            rgba(13, 13, 16, 0.65) 40%,
+            rgba(13, 13, 16, 0.15) 100%),
+        linear-gradient(to top,
+            var(--bg) 0%,
+            rgba(13, 13, 16, 0) 45%);
+}
+
+.hero-content {
+    position: relative;
+
+    z-index: 1;
+
+    max-width: 640px;
+}
+
+.hero-title {
+    font-family: var(--font-heading);
+    font-weight: 800;
+
+    font-size: clamp(2.4rem,
+            6.5vw,
+            5rem);
+
+    line-height: 1.05;
+
+    letter-spacing: -0.02em;
+
+    margin-bottom: 0.9rem;
+
+    text-shadow:
+        0 4px 24px rgba(0, 0, 0, 0.6);
+}
+
+.hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+
+    color: var(--text-muted);
+}
+
+.hero-desc {
+    max-width: 55ch;
+
+    margin: 1rem 0 1.6rem;
+
+    font-size: clamp(1rem,
+            1.4vw,
+            1.15rem);
+
+    color: #dcdce0;
+
+    text-shadow:
+        0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.hero-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+
+/* =========================================================
+   5. BUTTONS
+   ========================================================= */
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 0.55rem;
+
+    padding: 0.75rem 1.6rem;
+
+    border-radius: 6px;
+
+    font-size: 1rem;
+    font-weight: 700;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(4px);
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.28);
+}
+
+.btn.added {
+    background: #fff;
+    color: #111;
+}
+
+
+/* =========================================================
+   6. CONTENT
+   ========================================================= */
+
+.content {
+    position: relative;
+
+    z-index: 2;
+
+    margin-top: -6rem;
+
+    padding-bottom: 3rem;
+}
+
+
+/* =========================================================
+   CATEGORY SECTION
+   ========================================================= */
+
+.category-section {
+    position: relative;
+
+    margin-bottom: 2.2rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding:
+        0 var(--page-padding) 0.7rem;
+}
+
+.section-header h2 {
+    font-family: var(--font-heading);
+
+    font-size: clamp(1.1rem,
+            2vw,
+            1.5rem);
+
+    font-weight: 600;
+}
+
+.row-controls {
+    display: flex;
+    gap: 0.4rem;
+}
+
+.row-arrow {
+    width: 40px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    font-size: 2rem;
+    line-height: 1;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.row-arrow:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+}
+
+
+/* =========================================================
+   MOVIE ROW
+   ========================================================= */
+
+.movie-row {
+    display: flex;
+
+    gap: 0.9rem;
+
+    padding:
+        0.8rem var(--page-padding) 2rem;
+
+    overflow-x: auto;
+
+    scroll-behavior: smooth;
+
+    scrollbar-width: none;
+}
+
+.movie-row::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* =========================================================
+   MOVIE CARD
+   ========================================================= */
+
+.movie-card {
+    position: relative;
+
+    flex: 0 0 var(--card-width);
+
+    width: var(--card-width);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.3s ease;
+}
+
+.movie-card:hover {
+    transform: scale(1.06);
+
+    z-index: 10;
+}
+
+
+/* =========================================================
+   POSTER
+   ========================================================= */
+
+.movie-poster {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 2 / 3;
+
+    overflow: hidden;
+
+    border-radius: var(--radius);
+
+    background:
+        linear-gradient(160deg,
+            var(--surface-light),
+            var(--surface));
+
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.45);
+}
+
+.movie-poster img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    /*
+       Keeps the image centered.
+       This prevents subjects from being pushed
+       unnecessarily toward the left or right.
+    */
+    object-position: center center;
+
+    transition:
+        transform 0.4s ease;
+}
+
+.movie-card:hover .movie-poster img {
+    transform: scale(1.03);
+}
+
+
+/* =========================================================
+   MOVIE OVERLAY
+   ========================================================= */
+
+.movie-overlay {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: center;
+
+    gap: 0.45rem;
+
+    padding: 0.8rem;
+
+    background:
+        linear-gradient(to top,
+            rgba(0, 0, 0, 0.95) 0%,
+            rgba(0, 0, 0, 0.6) 45%,
+            rgba(0, 0, 0, 0) 75%);
+
+    opacity: 0;
+
+    transition:
+        opacity 0.3s ease;
+}
+
+.movie-card:hover .movie-overlay {
+    opacity: 1;
+}
+
+
+/* =========================================================
+   CARD ACTION BUTTONS
+   ========================================================= */
+
+.card-action {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border:
+        2px solid rgba(255, 255, 255, 0.7);
+
+    border-radius: 50%;
+
+    background:
+        rgba(20, 20, 24, 0.8);
+
+    font-size: 0.95rem;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.card-action:hover {
+    background: #fff;
+
+    color: #111;
+
+    border-color: #fff;
+
+    transform: scale(1.1);
+}
+
+
+/* =========================================================
+   MOVIE INFORMATION
+   ========================================================= */
+
+.movie-info {
+    padding:
+        0.6rem 0.15rem 0;
+}
+
+.movie-info h3 {
+    font-size: 0.95rem;
+
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+.movie-meta {
+    display: flex;
+
+    gap: 0.6rem;
+
+    margin-top: 0.2rem;
+
+    color: var(--text-muted);
+
+    font-size: 0.78rem;
+}
+
+.movie-meta span:nth-child(2) {
+    color: var(--gold);
+}
+
+
+/* =========================================================
+   7. SEARCH RESULTS
+   ========================================================= */
+
+.search-results {
+    display: none;
+
+    min-height: 80vh;
+
+    padding:
+        calc(var(--nav-height) + 2rem) var(--page-padding) 3rem;
+}
+
+.results-title {
+    font-family: var(--font-heading);
+
+    font-size:
+        clamp(1.3rem,
+            3vw,
+            1.9rem);
+
+    font-weight: 700;
+
+    overflow-wrap: anywhere;
+}
+
+.results-count {
+    margin-top: 0.3rem;
+
+    color: var(--text-muted);
+}
+
+.results-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill,
+            minmax(var(--card-width),
+                1fr));
+
+    gap: 1.8rem 1rem;
+
+    margin-top: 1.5rem;
+}
+
+.results-grid .movie-card {
+    width: 100%;
+}
+
+.no-results {
+    padding: 4rem 1rem;
+
+    text-align: center;
+
+    color: var(--text-muted);
+}
+
+.no-results h3 {
+    margin-bottom: 0.4rem;
+
+    font-family: var(--font-heading);
+
+    font-size: 1.3rem;
+
+    color: var(--text);
+}
+
+
+/* =========================================================
+   8. MODALS
+   ========================================================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 200;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 1rem;
+
+    visibility: hidden;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0s linear 0.25s;
+}
+
+.modal.active {
+    visibility: visible;
+
+    opacity: 1;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0s;
+}
+
+.modal-backdrop {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        rgba(0, 0, 0, 0.8);
+
+    backdrop-filter: blur(3px);
+}
+
+.modal-box {
+    position: relative;
+
+    width: min(720px, 100%);
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+
+    border-radius: 14px;
+
+    background: var(--surface);
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.8);
+
+    transform:
+        translateY(20px) scale(0.98);
+
+    transition:
+        transform 0.3s ease;
+}
+
+.modal.active .modal-box {
+    transform: none;
+}
+
+.modal-close {
+    position: absolute;
+
+    top: 0.7rem;
+    right: 0.7rem;
+
+    z-index: 5;
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        rgba(0, 0, 0, 0.65);
+
+    font-size: 1.6rem;
+
+    transition:
+        background 0.2s ease;
+}
+
+.modal-close:hover {
+    background: var(--accent);
+}
+
+
+/* =========================================================
+   INFO MODAL
+   ========================================================= */
+
+.modal-banner {
+    position: relative;
+
+    aspect-ratio: 16 / 9;
+
+    background-color: var(--surface-light);
+
+    background-size: cover;
+
+    background-position: center;
+}
+
+.modal-banner::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(to top,
+            var(--surface) 0%,
+            rgba(26, 26, 32, 0) 65%);
+}
+
+.modal-body {
+    position: relative;
+
+    margin-top: -3.2rem;
+
+    padding:
+        0 1.8rem 1.8rem;
+}
+
+.modal-title {
+    font-family: var(--font-heading);
+
+    font-size:
+        clamp(1.6rem,
+            4vw,
+            2.3rem);
+
+    font-weight: 800;
+
+    line-height: 1.1;
+
+    margin-bottom: 1rem;
+}
+
+.facts {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 0.8rem 2.2rem;
+}
+
+.facts dt {
+    font-size: 0.8rem;
+
+    color: var(--text-muted);
+}
+
+.facts dd {
+    font-weight: 700;
+}
+
+.modal-desc {
+    margin:
+        1.1rem 0 1.5rem;
+
+    color: #d6d6dc;
+}
+
+.modal-actions {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 0.8rem;
+}
+
+
+/* =========================================================
+   PLAYER MODAL
+   ========================================================= */
+
+.modal-box-wide {
+    width: min(960px, 100%);
+
+    background: #000;
+}
+
+.player-screen {
+    aspect-ratio: 16 / 9;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 0.7rem;
+
+    padding: 1.5rem;
+
+    text-align: center;
+
+    background:
+        radial-gradient(circle at center,
+            #2a1015 0%,
+            #050506 70%);
+}
+
+.player-icon {
+    width: 76px;
+    height: 76px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border:
+        3px solid rgba(255, 255, 255, 0.7);
+
+    border-radius: 50%;
+
+    font-size: 1.5rem;
+}
+
+.player-title {
+    font-family: var(--font-heading);
+
+    font-size:
+        clamp(1.1rem,
+            3vw,
+            1.8rem);
+
+    font-weight: 700;
+}
+
+.player-note {
+    max-width: 44ch;
+
+    font-size: 0.9rem;
+
+    color: var(--text-muted);
+}
+
+.player-controls {
+    display: flex;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    padding:
+        0.8rem 1rem;
+
+    background: #0a0a0c;
+}
+
+.player-toggle {
+    min-width: 72px;
+
+    padding:
+        0.4rem 1rem;
+
+    border-radius: 6px;
+
+    background: #fff;
+
+    color: #111;
+
+    font-size: 0.9rem;
+
+    font-weight: 700;
+}
+
+.player-bar {
+    flex: 1;
+
+    height: 6px;
+
+    border-radius: 3px;
+
+    overflow: hidden;
+
+    background:
+        rgba(255, 255, 255, 0.2);
+}
+
+.player-fill {
+    width: 0;
+
+    height: 100%;
+
+    background: var(--accent);
+
+    transition: width 0.1s linear;
+}
+
+
+/* =========================================================
+   9. TOAST
+   ========================================================= */
+
+.toast {
+    position: fixed;
+
+    left: 50%;
+    bottom: 1.5rem;
+
+    z-index: 300;
+
+    max-width: 90vw;
+
+    padding:
+        0.7rem 1.2rem;
+
+    border-radius: 8px;
+
+    background: #fff;
+
+    color: #111;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.5);
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, 20px);
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
+}
+
+.toast.show {
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer {
+    padding:
+        2rem var(--page-padding);
+
+    border-top:
+        1px solid rgba(255, 255, 255, 0.08);
+
+    text-align: center;
+
+    font-size: 0.85rem;
+
+    color: var(--text-muted);
+}
+
+
+/* =========================================================
+   10. RESPONSIVE DESIGN
+   ========================================================= */
+
+
+/* Large desktop */
+
+@media (min-width: 1600px) {
+
+    :root {
+        --card-width: 230px;
+    }
+}
+
+
+/* Tablet */
+
+@media (max-width: 1024px) {
+
+    :root {
+        --card-width: 170px;
+    }
+
+    .nav-left {
+        gap: 1.5rem;
+    }
+
+    .nav-links {
+        gap: 1.1rem;
+    }
+
+    .search-box.active input {
+        width: 170px;
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+
+    :root {
+        --card-width: 140px;
+        --nav-height: 60px;
+        --page-padding: 5%;
+    }
+
+    .menu-toggle {
+        display: flex;
+    }
+
+    .nav-left {
+        gap: 0;
+    }
+
+    .nav-links {
+        position: absolute;
+
+        top: 100%;
+        left: 0;
+        right: 0;
+
+        flex-direction: column;
+
+        gap: 0;
+
+        padding:
+            0.4rem var(--page-padding) 1rem;
+
+        background: #0a0a0c;
+
+        border-top:
+            1px solid rgba(255, 255, 255, 0.08);
+
+        box-shadow:
+            0 20px 30px rgba(0, 0, 0, 0.6);
+
+        opacity: 0;
+
+        visibility: hidden;
+
+        transform:
+            translateY(-8px);
+
+        transition:
+            opacity 0.25s ease,
+            transform 0.25s ease,
+            visibility 0.25s ease;
+    }
+
+    .nav-links.active {
+        opacity: 1;
+
+        visibility: visible;
+
+        transform: none;
+    }
+
+    .nav-links a {
+        padding: 0.9rem 0;
+
+        border-bottom:
+            1px solid rgba(255, 255, 255, 0.06);
+
+        font-size: 1.05rem;
+    }
+
+    .search-box.active input {
+        width: min(200px, 48vw);
+    }
+
+    .hero {
+        min-height: 72vh;
+
+        padding-bottom: 7rem;
+    }
+
+    .hero-desc {
+        display: -webkit-box;
+
+        -webkit-line-clamp: 3;
+
+        line-clamp: 3;
+
+        -webkit-box-orient: vertical;
+
+        overflow: hidden;
+    }
+
+    .btn {
+        padding:
+            0.65rem 1.2rem;
+
+        font-size: 0.95rem;
+    }
+
+    .content {
+        margin-top: -4.5rem;
+    }
+
+    .section-header {
+        padding-bottom: 0.5rem;
+    }
+
+    .row-controls {
+        display: none;
+    }
+
+    .movie-meta {
+        font-size: 0.7rem;
+    }
+
+    .movie-info h3 {
+        font-size: 0.85rem;
+    }
+
+    .modal-body {
+        padding:
+            0 1.2rem 1.4rem;
+    }
+}
+
+
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 480px) {
+
+    :root {
+        --card-width: 125px;
+    }
+
+    .hero-buttons .btn {
+        flex: 1;
+
+        justify-content: center;
+    }
+
+    .movie-row {
+        gap: 0.7rem;
+    }
+
+    .movie-overlay {
+        opacity: 1;
+
+        padding: 0.5rem;
+
+        background:
+            linear-gradient(to top,
+                rgba(0, 0, 0, 0.9),
+                rgba(0, 0, 0, 0) 60%);
+    }
+
+    .card-action {
+        width: 32px;
+        height: 32px;
+
+        font-size: 0.8rem;
+    }
+}
+
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) {
+
+    .movie-card:hover {
+        transform: none;
+    }
+
+    .movie-overlay {
+        opacity: 1;
+
+        background:
+            linear-gradient(to top,
+                rgba(0, 0, 0, 0.85),
+                rgba(0, 0, 0, 0) 60%);
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    html {
+        scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+    }
+}
