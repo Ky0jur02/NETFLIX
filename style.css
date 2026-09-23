@@ -1,1393 +1,1544 @@
-/* =========================================================
+/* ==============================================================
    STREAMFLIX - style.css
-   ========================================================= */
 
-/* =========================================================
+   Contents
+   1. Colors, fonts and sizes (CSS variables)
+   2. Reset and base styles
+   3. Navigation bar
+   4. Hero banner
+   5. Buttons
+   6. Movie rows and movie cards
+   7. Search results
+   8. Modals (info + player)
+   9. Toast message and footer
+   10. Responsive design (tablet and mobile)
+   ============================================================== */
+
+
+/* ==============================================================
    1. VARIABLES
-   ========================================================= */
-
+   Change a value here and it updates everywhere on the site.
+   ============================================================== */
 :root {
-    --bg: #0d0d10;
-    --surface: #1a1a20;
-    --surface-light: #2a2a33;
+  --bg: #0d0d10;              /* page background */
+  --surface: #1a1a20;         /* modals and card backgrounds */
+  --surface-light: #2a2a33;
+  --text: #f4f4f6;            /* main text */
+  --text-muted: #a1a1ab;      /* gray secondary text */
+  --accent: #e5303f;          /* red accent color */
+  --accent-hover: #ff4655;
+  --gold: #f3c257;            /* star ratings */
 
-    --text: #f4f4f6;
-    --text-muted: #a1a1ab;
+  --nav-height: 68px;
+  --page-padding: 4%;         /* left/right space of the page */
+  --card-width: 200px;        /* width of one movie card */
+  --radius: 10px;
 
-    --accent: #e5303f;
-    --accent-hover: #ff4655;
-    --gold: #f3c257;
-
-    --nav-height: 68px;
-    --page-padding: 4%;
-    --card-width: 200px;
-    --radius: 10px;
-
-    --font-heading: "Sora", "Segoe UI", Arial, sans-serif;
-    --font-body: "DM Sans", "Segoe UI", Arial, sans-serif;
+  --font-heading: "Sora", "Segoe UI", Arial, sans-serif;
+  --font-body: "DM Sans", "Segoe UI", Arial, sans-serif;
 }
 
 
-/* =========================================================
+/* ==============================================================
    2. RESET AND BASE
-   ========================================================= */
-
+   ============================================================== */
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-    scroll-behavior: smooth;
+  scroll-behavior: smooth;   /* smooth scrolling when clicking nav links */
 }
 
 body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-body);
-    line-height: 1.5;
-    overflow-x: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  overflow-x: hidden;
 }
 
+/* JavaScript adds this class while a modal is open, so the page behind can't scroll */
 body.modal-open {
-    overflow: hidden;
+  overflow: hidden;
 }
 
 img {
-    display: block;
-    max-width: 100%;
+  display: block;
+  max-width: 100%;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  color: inherit;
+  text-decoration: none;
 }
 
 button {
-    font: inherit;
-    color: inherit;
-    background: none;
-    border: none;
-    cursor: pointer;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-button:focus-visible,
-a:focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 3px;
+/* Visible outline for keyboard users */
+:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }
 
+/* Makes the HTML "hidden" attribute always work */
 [hidden] {
-    display: none !important;
+  display: none !important;
+}
+
+/* Shared small text styles */
+.rating {
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.pill {
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  padding: 0.1rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--text);
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  color: var(--text-muted);
+  font-size: 0.95rem;
 }
 
 
-/* =========================================================
-   3. NAVIGATION
-   ========================================================= */
-
+/* ==============================================================
+   3. NAVIGATION BAR
+   ============================================================== */
 .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+  position: fixed;            /* stays at the top while scrolling */
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--nav-height);
+  padding: 0 var(--page-padding);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 
-    z-index: 100;
-
-    height: var(--nav-height);
-    padding: 0 var(--page-padding);
-
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    background: linear-gradient(to bottom,
-            rgba(0, 0, 0, 0.9),
-            rgba(0, 0, 0, 0));
-
-    transition: background 0.3s ease;
+  /* Transparent dark fade at the top of the page */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0));
 }
 
-.navbar.scrolled {
-    background: rgba(10, 10, 12, 0.96);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+/* A solid dark layer sits behind the content and fades in when we scroll.
+   (A gradient can't be animated into a solid color, so we fade this layer instead.) */
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: #0a0a0c;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* script.js adds "scrolled" after scrolling down and "menu-open" when the mobile menu is open */
+.navbar.scrolled::before,
+.navbar.menu-open::before {
+  opacity: 1;
 }
 
 .nav-left {
-    display: flex;
-    align-items: center;
-    gap: 2.2rem;
+  display: flex;
+  align-items: center;
+  gap: 2.2rem;
 }
 
 .logo {
-    font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 1.45rem;
-    letter-spacing: 0.06em;
-    color: var(--accent);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 1.45rem;
+  letter-spacing: 0.06em;
+  color: var(--accent);
 }
 
 .nav-links {
-    display: flex;
-    gap: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
 }
 
 .nav-links a {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    transition: color 0.2s ease;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  transition: color 0.2s;
 }
 
 .nav-links a:hover {
-    color: var(--text);
+  color: var(--text);
 }
 
 .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
-
-/* =========================================================
-   SEARCH
-   ========================================================= */
-
+/* --- Search box --- */
 .search-box {
-    display: flex;
-    align-items: center;
-
-    border: 1px solid transparent;
-    border-radius: 6px;
-
-    transition:
-        background 0.3s ease,
-        border-color 0.3s ease;
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  transition: background 0.3s, border-color 0.3s;
 }
 
+/* The input is squeezed to 0 width until the search box gets the "open" class */
 .search-box input {
-    width: 0;
-    padding: 0;
-
-    opacity: 0;
-
-    border: none;
-    outline: none;
-
-    background: transparent;
-    color: var(--text);
-
-    font: inherit;
-    font-size: 0.95rem;
-
-    transition:
-        width 0.3s ease,
-        opacity 0.3s ease,
-        padding 0.3s ease;
+  width: 0;
+  padding: 0;
+  opacity: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  transition: width 0.3s, opacity 0.3s, padding 0.3s;
 }
 
 .search-box input::placeholder {
-    color: var(--text-muted);
+  color: var(--text-muted);
 }
 
-.search-box.active {
-    background: rgba(0, 0, 0, 0.75);
-    border-color: rgba(255, 255, 255, 0.5);
+.search-box.open {
+  background: rgba(0, 0, 0, 0.75);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
-.search-box.active input {
-    width: 220px;
-    padding: 0.45rem 0.3rem 0.45rem 0.8rem;
-    opacity: 1;
+.search-box.open input {
+  width: 220px;
+  padding: 0.45rem 0.3rem 0.45rem 0.8rem;
+  opacity: 1;
 }
 
 .search-btn {
-    width: 40px;
-    height: 40px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    font-size: 1.1rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-
-/* =========================================================
-   PROFILE
-   ========================================================= */
-
+/* --- Profile icon --- */
 .profile-btn {
-    width: 34px;
-    height: 34px;
-
-    border-radius: 6px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: linear-gradient(135deg,
-            var(--accent),
-            #8f1d2a);
-
-    transition: transform 0.2s ease;
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--accent), #8f1d2a);
+  transition: transform 0.2s;
 }
 
 .profile-btn:hover {
-    transform: scale(1.08);
+  transform: scale(1.08);
+}
+
+/* --- Hamburger button (hidden on desktop, shown in section 10) --- */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+}
+
+.hamburger span {
+  width: 22px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--text);
+  transition: transform 0.3s, opacity 0.3s;
+}
+
+/* When the menu is open, the three lines turn into an X */
+.hamburger[aria-expanded="true"] span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburger[aria-expanded="true"] span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger[aria-expanded="true"] span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 
-/* =========================================================
-   MOBILE MENU
-   ========================================================= */
-
-.menu-toggle {
-    display: none;
-
-    width: 40px;
-    height: 40px;
-
-    align-items: center;
-    justify-content: center;
-
-    font-size: 1.5rem;
-}
-
-
-/* =========================================================
-   4. HERO
-   ========================================================= */
-
+/* ==============================================================
+   4. HERO BANNER
+   ============================================================== */
 .hero {
-    position: relative;
-
-    min-height: 88vh;
-
-    display: flex;
-    align-items: flex-end;
-
-    padding:
-        calc(var(--nav-height) + 2rem) var(--page-padding) 9rem;
-
-    overflow: hidden;
-
-    background:
-        linear-gradient(135deg,
-            #2a0c12,
-            var(--bg));
+  position: relative;
+  min-height: 88vh;
+  display: flex;
+  align-items: flex-end;
+  padding: calc(var(--nav-height) + 2rem) var(--page-padding) 9rem;
+  overflow: hidden;
+  /* Shown if the background image can't load */
+  background: linear-gradient(135deg, #2a0c12, var(--bg));
 }
 
+/* The big background picture (set from script.js) */
 .hero-bg {
-    position: absolute;
-    inset: 0;
-
-    background-size: cover;
-    background-position: center center;
-
-    transition: background-image 0.4s ease;
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center 30%;
 }
 
+/* Dark gradients on top of the picture so the text is easy to read:
+   one from the left, one fading into the page background at the bottom */
 .hero::after {
-    content: "";
-
-    position: absolute;
-    inset: 0;
-
-    background:
-        linear-gradient(to right,
-            rgba(13, 13, 16, 0.94) 0%,
-            rgba(13, 13, 16, 0.65) 40%,
-            rgba(13, 13, 16, 0.15) 100%),
-        linear-gradient(to top,
-            var(--bg) 0%,
-            rgba(13, 13, 16, 0) 45%);
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, rgba(13, 13, 16, 0.92) 0%, rgba(13, 13, 16, 0.55) 45%, rgba(13, 13, 16, 0.1) 100%),
+    linear-gradient(to top, var(--bg) 0%, rgba(13, 13, 16, 0) 40%);
 }
 
 .hero-content {
-    position: relative;
-
-    z-index: 1;
-
-    max-width: 640px;
+  position: relative;
+  z-index: 1;                 /* keeps the text above the gradients */
+  max-width: 640px;
 }
 
 .hero-title {
-    font-family: var(--font-heading);
-    font-weight: 800;
-
-    font-size: clamp(2.4rem,
-            6.5vw,
-            5rem);
-
-    line-height: 1.05;
-
-    letter-spacing: -0.02em;
-
-    margin-bottom: 0.9rem;
-
-    text-shadow:
-        0 4px 24px rgba(0, 0, 0, 0.6);
-}
-
-.hero-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-
-    color: var(--text-muted);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(2.4rem, 6.5vw, 5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.9rem;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
 }
 
 .hero-desc {
-    max-width: 55ch;
-
-    margin: 1rem 0 1.6rem;
-
-    font-size: clamp(1rem,
-            1.4vw,
-            1.15rem);
-
-    color: #dcdce0;
-
-    text-shadow:
-        0 2px 10px rgba(0, 0, 0, 0.7);
+  max-width: 55ch;
+  margin: 1rem 0 1.6rem;
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  color: #dcdce0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
 }
 
 .hero-buttons {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
 }
 
 
-/* =========================================================
+/* ==============================================================
    5. BUTTONS
-   ========================================================= */
-
+   ============================================================== */
 .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    gap: 0.55rem;
-
-    padding: 0.75rem 1.6rem;
-
-    border-radius: 6px;
-
-    font-size: 1rem;
-    font-weight: 700;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: background 0.2s, transform 0.2s;
 }
 
 .btn:hover {
-    transform: translateY(-1px);
+  transform: translateY(-1px);
 }
 
 .btn-primary {
-    background: var(--accent);
-    color: #fff;
+  background: var(--accent);
+  color: #fff;
 }
 
 .btn-primary:hover {
-    background: var(--accent-hover);
+  background: var(--accent-hover);
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(4px);
 }
 
 .btn-secondary:hover {
-    background: rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.28);
 }
 
+/* A "My List" button turns white when the movie is in the list */
 .btn.added {
-    background: #fff;
-    color: #111;
+  background: #fff;
+  color: #111;
 }
 
 
-/* =========================================================
-   6. CONTENT
-   ========================================================= */
+/* ==============================================================
+   6. MOVIE ROWS AND CARDS
+   ============================================================== */
 
+/* The rows slide up a little so they overlap the bottom of the hero */
 .content {
-    position: relative;
-
-    z-index: 2;
-
-    margin-top: -6rem;
-
-    padding-bottom: 3rem;
+  position: relative;
+  z-index: 2;
+  margin-top: -6rem;
+  padding-bottom: 3rem;
 }
 
-
-/* =========================================================
-   CATEGORY SECTION
-   ========================================================= */
-
-.category-section {
-    position: relative;
-
-    margin-bottom: 2.2rem;
+.row {
+  /* Leaves room for the fixed navbar when a nav link scrolls to a row */
+  scroll-margin-top: calc(var(--nav-height) + 10px);
 }
 
-.section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    padding:
-        0 var(--page-padding) 0.7rem;
+.row-title {
+  padding: 0 var(--page-padding);
+  font-family: var(--font-heading);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-weight: 600;
 }
 
-.section-header h2 {
-    font-family: var(--font-heading);
-
-    font-size: clamp(1.1rem,
-            2vw,
-            1.5rem);
-
-    font-weight: 600;
+.row-wrap {
+  position: relative;
 }
 
-.row-controls {
-    display: flex;
-    gap: 0.4rem;
+/* The scrollable strip of cards.
+   The extra padding gives the cards space to grow when hovered. */
+.row-track {
+  display: flex;
+  gap: 0.9rem;
+  padding: 1.2rem var(--page-padding) 2.4rem;
+  overflow-x: auto;             /* makes the row scroll sideways */
+  scroll-behavior: smooth;
+  scrollbar-width: none;        /* hide the scrollbar (Firefox) */
+  -webkit-overflow-scrolling: touch;
 }
 
+.row-track::-webkit-scrollbar {
+  display: none;                /* hide the scrollbar (Chrome, Safari) */
+}
+
+/* Left / right arrow buttons (desktop only, see the media query below) */
 .row-arrow {
-    width: 40px;
-    height: 40px;
+  position: absolute;
+  top: 1.2rem;
+  bottom: 2.4rem;
+  z-index: 20;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--page-padding);
+  min-width: 44px;
+  font-size: 2.4rem;
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
 
+.row-arrow.left {
+  left: 0;
+  background: linear-gradient(to right, rgba(13, 13, 16, 0.9), transparent);
+}
+
+.row-arrow.right {
+  right: 0;
+  background: linear-gradient(to left, rgba(13, 13, 16, 0.9), transparent);
+}
+
+.row-arrow:focus-visible {
+  opacity: 1;
+}
+
+@media (hover: hover) and (min-width: 769px) {
+  .row-arrow {
     display: flex;
-    align-items: center;
-    justify-content: center;
+  }
 
-    border-radius: 50%;
-
-    background: rgba(255, 255, 255, 0.12);
-
-    font-size: 2rem;
-    line-height: 1;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease;
-}
-
-.row-arrow:hover {
-    background: rgba(255, 255, 255, 0.25);
-    transform: scale(1.05);
-}
-
-
-/* =========================================================
-   MOVIE ROW
-   ========================================================= */
-
-.movie-row {
-    display: flex;
-
-    gap: 0.9rem;
-
-    padding:
-        0.8rem var(--page-padding) 2rem;
-
-    overflow-x: auto;
-
-    scroll-behavior: smooth;
-
-    scrollbar-width: none;
-}
-
-.movie-row::-webkit-scrollbar {
-    display: none;
-}
-
-
-/* =========================================================
-   MOVIE CARD
-   ========================================================= */
-
-.movie-card {
-    position: relative;
-
-    flex: 0 0 var(--card-width);
-
-    width: var(--card-width);
-
-    cursor: pointer;
-
-    transition:
-        transform 0.3s ease;
-}
-
-.movie-card:hover {
-    transform: scale(1.06);
-
-    z-index: 10;
-}
-
-
-/* =========================================================
-   POSTER
-   ========================================================= */
-
-.movie-poster {
-    position: relative;
-
-    width: 100%;
-
-    aspect-ratio: 2 / 3;
-
-    overflow: hidden;
-
-    border-radius: var(--radius);
-
-    background:
-        linear-gradient(160deg,
-            var(--surface-light),
-            var(--surface));
-
-    box-shadow:
-        0 6px 16px rgba(0, 0, 0, 0.45);
-}
-
-.movie-poster img {
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    object-fit: cover;
-
-    /*
-       Keeps the image centered.
-       This prevents subjects from being pushed
-       unnecessarily toward the left or right.
-    */
-    object-position: center center;
-
-    transition:
-        transform 0.4s ease;
-}
-
-.movie-card:hover .movie-poster img {
-    transform: scale(1.03);
-}
-
-
-/* =========================================================
-   MOVIE OVERLAY
-   ========================================================= */
-
-.movie-overlay {
-    position: absolute;
-    inset: 0;
-
-    display: flex;
-
-    align-items: flex-end;
-    justify-content: center;
-
-    gap: 0.45rem;
-
-    padding: 0.8rem;
-
-    background:
-        linear-gradient(to top,
-            rgba(0, 0, 0, 0.95) 0%,
-            rgba(0, 0, 0, 0.6) 45%,
-            rgba(0, 0, 0, 0) 75%);
-
-    opacity: 0;
-
-    transition:
-        opacity 0.3s ease;
-}
-
-.movie-card:hover .movie-overlay {
+  .row-wrap:hover .row-arrow {
     opacity: 1;
+  }
+}
+
+/* Message shown when My List is empty */
+.empty-message {
+  margin: 1.2rem var(--page-padding) 1rem;
+  padding: 2rem 1.5rem;
+  border: 1px dashed rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+/* --- One movie card --- */
+.card {
+  position: relative;
+  flex: 0 0 var(--card-width);
+  width: var(--card-width);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+/* Hover (mouse) or keyboard focus: the card grows slightly.
+   The keyboard rule is separate because older browsers ignore a whole rule
+   if they don't understand one selector in it. */
+.card:hover,
+.card:focus-visible {
+  transform: scale(1.07);
+  z-index: 10;
+}
+
+.card:has(:focus-visible) {
+  transform: scale(1.07);
+  z-index: 10;
+}
+
+.card-poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: linear-gradient(160deg, var(--surface-light), var(--surface));
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 0.3s ease;
+}
+
+.card:hover .card-poster,
+.card:focus-visible .card-poster {
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.8);
+}
+
+.card-poster img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* The title sits behind the picture and only shows if the picture fails to load */
+.poster-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.8rem;
+  text-align: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.card-badge {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  z-index: 2;
+  padding: 0.1rem 0.5rem;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.75);
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Extra info that fades in when you hover over the card */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  padding: 0.8rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.7) 55%, rgba(0, 0, 0, 0) 100%);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover .card-overlay,
+.card:focus-visible .card-overlay {
+  opacity: 1;
+  transform: none;
+}
+
+.card:has(:focus-visible) .card-overlay {
+  opacity: 1;
+  transform: none;
+}
+
+.card-genre {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--gold);
+}
+
+/* Show at most 4 lines of the description */
+.card-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #d0d0d6;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  background: rgba(20, 20, 24, 0.7);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: background 0.2s, border-color 0.2s, transform 0.2s;
+}
+
+.icon-btn:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.icon-btn-play {
+  background: #fff;
+  border-color: #fff;
+  color: #111;
+}
+
+.icon-btn-play:hover {
+  background: #e4e4e8;
+}
+
+.icon-btn-play svg {
+  margin-left: 2px;
+}
+
+/* Red button = already in My List */
+.icon-btn.added {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* "Continue Watching" progress bar */
+.card-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.card-progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+/* Title, year and rating under the poster */
+.card-meta {
+  padding: 0.6rem 0.15rem 0;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-sub {
+  display: flex;
+  gap: 0.7rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
 }
 
 
-/* =========================================================
-   CARD ACTION BUTTONS
-   ========================================================= */
-
-.card-action {
-    width: 38px;
-    height: 38px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    border:
-        2px solid rgba(255, 255, 255, 0.7);
-
-    border-radius: 50%;
-
-    background:
-        rgba(20, 20, 24, 0.8);
-
-    font-size: 0.95rem;
-
-    transition:
-        background 0.2s ease,
-        transform 0.2s ease,
-        border-color 0.2s ease;
-}
-
-.card-action:hover {
-    background: #fff;
-
-    color: #111;
-
-    border-color: #fff;
-
-    transform: scale(1.1);
-}
-
-
-/* =========================================================
-   MOVIE INFORMATION
-   ========================================================= */
-
-.movie-info {
-    padding:
-        0.6rem 0.15rem 0;
-}
-
-.movie-info h3 {
-    font-size: 0.95rem;
-
-    font-weight: 700;
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
-}
-
-.movie-meta {
-    display: flex;
-
-    gap: 0.6rem;
-
-    margin-top: 0.2rem;
-
-    color: var(--text-muted);
-
-    font-size: 0.78rem;
-}
-
-.movie-meta span:nth-child(2) {
-    color: var(--gold);
-}
-
-
-/* =========================================================
+/* ==============================================================
    7. SEARCH RESULTS
-   ========================================================= */
-
+   While searching, script.js adds "is-searching" to the body.
+   That hides the hero and the rows and shows this section instead.
+   ============================================================== */
 .search-results {
-    display: none;
+  display: none;
+  min-height: 80vh;
+  padding: calc(var(--nav-height) + 2rem) var(--page-padding) 3rem;
+}
 
-    min-height: 80vh;
+body.is-searching .search-results {
+  display: block;
+}
 
-    padding:
-        calc(var(--nav-height) + 2rem) var(--page-padding) 3rem;
+body.is-searching .hero,
+body.is-searching .content {
+  display: none;
 }
 
 .results-title {
-    font-family: var(--font-heading);
-
-    font-size:
-        clamp(1.3rem,
-            3vw,
-            1.9rem);
-
-    font-weight: 700;
-
-    overflow-wrap: anywhere;
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .results-count {
-    margin-top: 0.3rem;
-
-    color: var(--text-muted);
+  color: var(--text-muted);
 }
 
 .results-grid {
-    display: grid;
-
-    grid-template-columns:
-        repeat(auto-fill,
-            minmax(var(--card-width),
-                1fr));
-
-    gap: 1.8rem 1rem;
-
-    margin-top: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--card-width), 1fr));
+  gap: 1.8rem 1rem;
+  margin-top: 1.5rem;
 }
 
-.results-grid .movie-card {
-    width: 100%;
+.results-grid .card {
+  width: 100%;
 }
 
 .no-results {
-    padding: 4rem 1rem;
-
-    text-align: center;
-
-    color: var(--text-muted);
+  padding: 4rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
 }
 
 .no-results h3 {
-    margin-bottom: 0.4rem;
-
-    font-family: var(--font-heading);
-
-    font-size: 1.3rem;
-
-    color: var(--text);
+  margin-bottom: 0.4rem;
+  font-family: var(--font-heading);
+  font-size: 1.3rem;
+  color: var(--text);
 }
 
 
-/* =========================================================
+/* ==============================================================
    8. MODALS
-   ========================================================= */
-
+   A modal is always in the page but invisible.
+   script.js adds the "open" class to show it.
+   ============================================================== */
 .modal {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 200;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 1rem;
-
-    visibility: hidden;
-
-    opacity: 0;
-
-    transition:
-        opacity 0.25s ease,
-        visibility 0s linear 0.25s;
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  visibility: hidden;
+  opacity: 0;
+  /* Wait for the fade-out to finish before hiding */
+  transition: opacity 0.25s ease, visibility 0s linear 0.25s;
 }
 
-.modal.active {
-    visibility: visible;
-
-    opacity: 1;
-
-    transition:
-        opacity 0.25s ease,
-        visibility 0s;
+.modal.open {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.25s ease, visibility 0s;
 }
 
+/* Dark background behind the modal. Clicking it closes the modal. */
 .modal-backdrop {
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        rgba(0, 0, 0, 0.8);
-
-    backdrop-filter: blur(3px);
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(3px);
 }
 
 .modal-box {
-    position: relative;
-
-    width: min(720px, 100%);
-
-    max-height: 92vh;
-
-    overflow-y: auto;
-
-    border-radius: 14px;
-
-    background: var(--surface);
-
-    box-shadow:
-        0 30px 80px rgba(0, 0, 0, 0.8);
-
-    transform:
-        translateY(20px) scale(0.98);
-
-    transition:
-        transform 0.3s ease;
+  position: relative;
+  width: min(720px, 100%);
+  max-height: 92vh;
+  max-height: 92dvh;
+  overflow-y: auto;             /* scroll inside the modal on short screens */
+  border-radius: 14px;
+  background: var(--surface);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+  transform: translateY(20px) scale(0.98);
+  transition: transform 0.3s ease;
 }
 
-.modal.active .modal-box {
-    transform: none;
+.modal.open .modal-box {
+  transform: none;
 }
 
 .modal-close {
-    position: absolute;
-
-    top: 0.7rem;
-    right: 0.7rem;
-
-    z-index: 5;
-
-    width: 38px;
-    height: 38px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border-radius: 50%;
-
-    background:
-        rgba(0, 0, 0, 0.65);
-
-    font-size: 1.6rem;
-
-    transition:
-        background 0.2s ease;
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 5;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  font-size: 1.6rem;
+  line-height: 1;
+  transition: background 0.2s;
 }
 
 .modal-close:hover {
-    background: var(--accent);
+  background: var(--accent);
 }
 
-
-/* =========================================================
-   INFO MODAL
-   ========================================================= */
-
+/* --- More Info modal --- */
 .modal-banner {
-    position: relative;
-
-    aspect-ratio: 16 / 9;
-
-    background-color: var(--surface-light);
-
-    background-size: cover;
-
-    background-position: center;
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background-color: var(--surface-light);
+  background-size: cover;
+  background-position: center;
 }
 
+/* Fades the bottom of the picture into the modal background */
 .modal-banner::after {
-    content: "";
-
-    position: absolute;
-
-    inset: 0;
-
-    background:
-        linear-gradient(to top,
-            var(--surface) 0%,
-            rgba(26, 26, 32, 0) 65%);
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--surface) 0%, rgba(26, 26, 32, 0) 65%);
 }
 
 .modal-body {
-    position: relative;
-
-    margin-top: -3.2rem;
-
-    padding:
-        0 1.8rem 1.8rem;
+  position: relative;
+  margin-top: -3.2rem;          /* pulls the title up over the picture */
+  padding: 0 1.8rem 1.8rem;
 }
 
 .modal-title {
-    font-family: var(--font-heading);
-
-    font-size:
-        clamp(1.6rem,
-            4vw,
-            2.3rem);
-
-    font-weight: 800;
-
-    line-height: 1.1;
-
-    margin-bottom: 1rem;
+  font-family: var(--font-heading);
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1rem;
 }
 
 .facts {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 0.8rem 2.2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem 2.2rem;
 }
 
 .facts dt {
-    font-size: 0.8rem;
-
-    color: var(--text-muted);
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 .facts dd {
-    font-weight: 700;
+  font-weight: 700;
 }
 
 .modal-desc {
-    margin:
-        1.1rem 0 1.5rem;
-
-    color: #d6d6dc;
+  margin: 1.1rem 0 1.5rem;
+  color: #d6d6dc;
 }
 
 .modal-actions {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    gap: 0.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
 }
 
-
-/* =========================================================
-   PLAYER MODAL
-   ========================================================= */
-
+/* --- Player modal --- */
 .modal-box-wide {
-    width: min(960px, 100%);
-
-    background: #000;
+  width: min(960px, 100%);
+  background: #000;
 }
 
 .player-screen {
-    aspect-ratio: 16 / 9;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 0.7rem;
-
-    padding: 1.5rem;
-
-    text-align: center;
-
-    background:
-        radial-gradient(circle at center,
-            #2a1015 0%,
-            #050506 70%);
+  aspect-ratio: 16 / 9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  padding: 1.5rem;
+  text-align: center;
+  background: radial-gradient(circle at center, #2a1015 0%, #050506 70%);
+  background-size: cover;
+  background-position: center;
 }
 
 .player-icon {
-    width: 76px;
-    height: 76px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    border:
-        3px solid rgba(255, 255, 255, 0.7);
-
-    border-radius: 50%;
-
-    font-size: 1.5rem;
+  width: 76px;
+  height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  padding-left: 4px;
 }
 
 .player-title {
-    font-family: var(--font-heading);
-
-    font-size:
-        clamp(1.1rem,
-            3vw,
-            1.8rem);
-
-    font-weight: 700;
+  font-family: var(--font-heading);
+  font-size: clamp(1.1rem, 3vw, 1.8rem);
+  font-weight: 700;
 }
 
 .player-note {
-    max-width: 44ch;
-
-    font-size: 0.9rem;
-
-    color: var(--text-muted);
+  max-width: 44ch;
+  font-size: 0.9rem;
+  color: var(--text-muted);
 }
 
 .player-controls {
-    display: flex;
-
-    align-items: center;
-
-    gap: 1rem;
-
-    padding:
-        0.8rem 1rem;
-
-    background: #0a0a0c;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1rem;
+  background: #0a0a0c;
 }
 
 .player-toggle {
-    min-width: 72px;
-
-    padding:
-        0.4rem 1rem;
-
-    border-radius: 6px;
-
-    background: #fff;
-
-    color: #111;
-
-    font-size: 0.9rem;
-
-    font-weight: 700;
+  min-width: 72px;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  background: #fff;
+  color: #111;
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .player-bar {
-    flex: 1;
-
-    height: 6px;
-
-    border-radius: 3px;
-
-    overflow: hidden;
-
-    background:
-        rgba(255, 255, 255, 0.2);
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .player-fill {
-    width: 0;
+  width: 0;
+  height: 100%;
+  background: var(--accent);
+}
 
-    height: 100%;
+/* The fake progress bar fills up while "playing" and stops when "paused" */
+.player.playing .player-fill {
+  animation: play-progress 120s linear forwards;
+}
 
-    background: var(--accent);
+.player.paused .player-fill {
+  animation-play-state: paused;
+}
 
-    transition: width 0.1s linear;
+@keyframes play-progress {
+  from { width: 0; }
+  to   { width: 100%; }
 }
 
 
-/* =========================================================
-   9. TOAST
-   ========================================================= */
-
+/* ==============================================================
+   9. TOAST MESSAGE AND FOOTER
+   ============================================================== */
 .toast {
-    position: fixed;
-
-    left: 50%;
-    bottom: 1.5rem;
-
-    z-index: 300;
-
-    max-width: 90vw;
-
-    padding:
-        0.7rem 1.2rem;
-
-    border-radius: 8px;
-
-    background: #fff;
-
-    color: #111;
-
-    font-weight: 700;
-
-    box-shadow:
-        0 10px 30px rgba(0, 0, 0, 0.5);
-
-    opacity: 0;
-
-    transform:
-        translate(-50%, 20px);
-
-    pointer-events: none;
-
-    transition:
-        opacity 0.3s ease,
-        transform 0.3s ease;
+  position: fixed;
+  left: 50%;
+  bottom: 1.5rem;
+  z-index: 300;
+  max-width: 90vw;
+  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  background: #fff;
+  color: #111;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transform: translate(-50%, 20px);
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
 }
 
 .toast.show {
-    opacity: 1;
-
-    transform:
-        translate(-50%, 0);
+  opacity: 1;
+  transform: translate(-50%, 0);
 }
-
-
-/* =========================================================
-   FOOTER
-   ========================================================= */
 
 .footer {
-    padding:
-        2rem var(--page-padding);
-
-    border-top:
-        1px solid rgba(255, 255, 255, 0.08);
-
-    text-align: center;
-
-    font-size: 0.85rem;
-
-    color: var(--text-muted);
+  padding: 2rem var(--page-padding);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
 }
 
 
-/* =========================================================
+/* ==============================================================
    10. RESPONSIVE DESIGN
-   ========================================================= */
+   ============================================================== */
 
-
-/* Large desktop */
-
+/* Large desktop screens (1600px and wider) */
 @media (min-width: 1600px) {
-
-    :root {
-        --card-width: 230px;
-    }
+  :root {
+    --card-width: 230px;
+  }
 }
 
-
-/* Tablet */
-
+/* Tablets */
 @media (max-width: 1024px) {
+  :root {
+    --card-width: 170px;
+  }
 
-    :root {
-        --card-width: 170px;
-    }
+  .nav-left {
+    gap: 1.5rem;
+  }
 
-    .nav-left {
-        gap: 1.5rem;
-    }
+  .nav-links {
+    gap: 1.1rem;
+  }
 
-    .nav-links {
-        gap: 1.1rem;
-    }
+  .search-box.open input {
+    width: 170px;
+  }
+}
 
-    .search-box.active input {
-        width: 170px;
-    }
+/* Phones and small tablets: the menu collapses into the hamburger */
+@media (max-width: 768px) {
+  :root {
+    --card-width: 130px;
+    --nav-height: 60px;
+    --page-padding: 5%;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-left {
+    gap: 0;
+  }
+
+  /* The links become a dropdown panel under the navbar */
+  .nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    padding: 0.4rem var(--page-padding) 1rem;
+    background: #0a0a0c;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity 0.25s, transform 0.25s, visibility 0.25s;
+  }
+
+  .nav-links.open {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .nav-links a {
+    padding: 0.9rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 1.05rem;
+  }
+
+  /* When the search box is open, the logo hides to make room for it */
+  .navbar.search-open .logo {
+    display: none;
+  }
+
+  .navbar.search-open .nav-right {
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .search-box.open input {
+    width: min(200px, 48vw);
+  }
+
+  .hero {
+    min-height: 72vh;
+    padding-bottom: 7rem;
+  }
+
+  .hero-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .btn {
+    padding: 0.65rem 1.2rem;
+    font-size: 0.95rem;
+  }
+
+  .content {
+    margin-top: -4.5rem;
+  }
+
+  .card-title {
+    font-size: 0.85rem;
+  }
+
+  .card-sub {
+    font-size: 0.75rem;
+  }
+
+  .modal-body {
+    padding: 0 1.2rem 1.4rem;
+  }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+  :root {
+    --card-width: 118px;
+  }
+
+  .hero-buttons .btn {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .row-track {
+    gap: 0.7rem;
+  }
+}
+
+/* Touch screens have no hover, so the card buttons are always visible.
+   Tapping the card itself opens the More Info window. */
+@media (hover: none) {
+  .card:hover {
+    transform: none;
+  }
+
+  .card-overlay {
+    opacity: 1;
+    transform: none;
+    padding: 0.5rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0) 45%);
+  }
+
+  .card-genre,
+  .card-desc,
+  .icon-btn[data-action="info"] {
+    display: none;
+  }
+
+  .icon-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Respect people who turn off animations in their system settings */
+@media (prefers-reduced-motion: reduce) {
+  html,
+  .row-track {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+
+  .player.playing .player-fill {
+    animation: none;
+    width: 35%;
+  }
 }
 
 
-/* =========================================================
-   MOBILE
-   ========================================================= */
+/* ==============================================================
+   11. AUTH SCREEN (Log In / Sign Up)
+   ============================================================== */
+
+/* The app is hidden until body gets the "authed" class from script.js */
+.app {
+  display: none;
+}
+
+body.authed .app {
+  display: block;
+}
+
+body.authed .auth-screen {
+  display: none;
+}
+
+.auth-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.auth-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(rgba(9, 9, 11, 0.88), rgba(9, 9, 11, 0.94)),
+    repeating-linear-gradient(120deg, #201014 0 2px, #0d0d10 2px 46px);
+}
+
+.auth-box {
+  position: relative;
+  width: min(420px, 100%);
+  padding: 2.6rem 2.2rem;
+  border-radius: 14px;
+  background: rgba(13, 13, 16, 0.9);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+}
+
+.auth-logo {
+  display: block;
+  margin-bottom: 1.8rem;
+  font-size: 1.5rem;
+}
+
+.auth-form h1 {
+  font-family: var(--font-heading);
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 1.3rem;
+}
+
+.auth-error {
+  margin-bottom: 1rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
+  background: rgba(229, 48, 63, 0.15);
+  border: 1px solid rgba(229, 48, 63, 0.5);
+  color: #ff9aa2;
+  font-size: 0.88rem;
+}
+
+.field {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.field span {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.field input {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #23232b;
+  color: var(--text);
+  font: inherit;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+  background: #29292f;
+}
+
+.field input:disabled {
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.auth-submit {
+  width: 100%;
+  justify-content: center;
+  margin-top: 0.4rem;
+}
+
+.auth-form .auth-submit + .auth-submit {
+  margin-top: 0.7rem;
+}
+
+.auth-switch {
+  margin-top: 1.3rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.link-btn {
+  color: var(--text);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+
+/* ==============================================================
+   12. MULTI-PAGE NAVIGATION
+   Only one .page is shown at a time; script.js toggles the "active" class.
+   ============================================================== */
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+/* Active nav link */
+.nav-links a.active {
+  color: var(--text);
+}
+
+.nav-links a.active::after {
+  content: "";
+}
+
+.page-header {
+  padding: calc(var(--nav-height) + 2.4rem) var(--page-padding) 1rem;
+}
+
+.page-header h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  font-weight: 800;
+}
+
+.page-header p {
+  margin-top: 0.4rem;
+  color: var(--text-muted);
+}
+
+.content-flat {
+  margin-top: 0;
+  padding-top: 0.5rem;
+}
+
+
+/* ==============================================================
+   13. PROFILE MENU (navbar dropdown) AND PROFILE PAGE
+   ============================================================== */
+.profile-menu-wrap {
+  position: relative;
+}
+
+.profile-btn span {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #fff;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 190px;
+  padding: 0.6rem;
+  border-radius: 10px;
+  background: #17171d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+
+.profile-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.dropdown-name {
+  padding: 0.4rem 0.6rem 0.6rem;
+  margin-bottom: 0.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.profile-dropdown button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.55rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.profile-dropdown button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#signout-btn {
+  color: var(--accent);
+}
+
+.profile-card {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  padding: 1.8rem;
+  margin-bottom: 1.5rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.avatar-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.avatar-big {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: var(--font-heading);
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--accent);
+}
+
+.avatar-colors {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.avatar-colors button {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+
+.avatar-colors button.selected {
+  border-color: #fff;
+}
+
+.profile-form {
+  flex: 1;
+  min-width: 220px;
+}
+
+.save-note {
+  margin-top: 0.6rem;
+  color: #6ee7a0;
+  font-size: 0.88rem;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.profile-stats div {
+  flex: 1;
+  padding: 1.2rem;
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-align: center;
+}
+
+.profile-stats strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.8rem;
+  color: var(--accent);
+}
+
+.profile-stats span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+
+/* ==============================================================
+   14. TOP 10 ROW
+   Numbered cards: a huge outlined number sits behind each poster.
+   ============================================================== */
+.top10-track {
+  gap: 0;
+}
+
+.top10-item {
+  display: flex;
+  align-items: flex-end;
+  flex: 0 0 auto;
+}
+
+.top10-rank {
+  flex: 0 0 auto;
+  width: clamp(38px, 7vw, 64px);
+  text-align: center;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: clamp(3.4rem, 9vw, 6rem);
+  line-height: 0.8;
+  color: transparent;
+  -webkit-text-stroke: 2px #4a4a55;
+  transform: translateX(14px);
+}
+
+.top10-item .card {
+  flex: 0 0 var(--card-width);
+  width: var(--card-width);
+}
 
 @media (max-width: 768px) {
-
-    :root {
-        --card-width: 140px;
-        --nav-height: 60px;
-        --page-padding: 5%;
-    }
-
-    .menu-toggle {
-        display: flex;
-    }
-
-    .nav-left {
-        gap: 0;
-    }
-
-    .nav-links {
-        position: absolute;
-
-        top: 100%;
-        left: 0;
-        right: 0;
-
-        flex-direction: column;
-
-        gap: 0;
-
-        padding:
-            0.4rem var(--page-padding) 1rem;
-
-        background: #0a0a0c;
-
-        border-top:
-            1px solid rgba(255, 255, 255, 0.08);
-
-        box-shadow:
-            0 20px 30px rgba(0, 0, 0, 0.6);
-
-        opacity: 0;
-
-        visibility: hidden;
-
-        transform:
-            translateY(-8px);
-
-        transition:
-            opacity 0.25s ease,
-            transform 0.25s ease,
-            visibility 0.25s ease;
-    }
-
-    .nav-links.active {
-        opacity: 1;
-
-        visibility: visible;
-
-        transform: none;
-    }
-
-    .nav-links a {
-        padding: 0.9rem 0;
-
-        border-bottom:
-            1px solid rgba(255, 255, 255, 0.06);
-
-        font-size: 1.05rem;
-    }
-
-    .search-box.active input {
-        width: min(200px, 48vw);
-    }
-
-    .hero {
-        min-height: 72vh;
-
-        padding-bottom: 7rem;
-    }
-
-    .hero-desc {
-        display: -webkit-box;
-
-        -webkit-line-clamp: 3;
-
-        line-clamp: 3;
-
-        -webkit-box-orient: vertical;
-
-        overflow: hidden;
-    }
-
-    .btn {
-        padding:
-            0.65rem 1.2rem;
-
-        font-size: 0.95rem;
-    }
-
-    .content {
-        margin-top: -4.5rem;
-    }
-
-    .section-header {
-        padding-bottom: 0.5rem;
-    }
-
-    .row-controls {
-        display: none;
-    }
-
-    .movie-meta {
-        font-size: 0.7rem;
-    }
-
-    .movie-info h3 {
-        font-size: 0.85rem;
-    }
-
-    .modal-body {
-        padding:
-            0 1.2rem 1.4rem;
-    }
-}
-
-
-/* =========================================================
-   SMALL PHONES
-   ========================================================= */
-
-@media (max-width: 480px) {
-
-    :root {
-        --card-width: 125px;
-    }
-
-    .hero-buttons .btn {
-        flex: 1;
-
-        justify-content: center;
-    }
-
-    .movie-row {
-        gap: 0.7rem;
-    }
-
-    .movie-overlay {
-        opacity: 1;
-
-        padding: 0.5rem;
-
-        background:
-            linear-gradient(to top,
-                rgba(0, 0, 0, 0.9),
-                rgba(0, 0, 0, 0) 60%);
-    }
-
-    .card-action {
-        width: 32px;
-        height: 32px;
-
-        font-size: 0.8rem;
-    }
-}
-
-
-/* =========================================================
-   TOUCH DEVICES
-   ========================================================= */
-
-@media (hover: none) {
-
-    .movie-card:hover {
-        transform: none;
-    }
-
-    .movie-overlay {
-        opacity: 1;
-
-        background:
-            linear-gradient(to top,
-                rgba(0, 0, 0, 0.85),
-                rgba(0, 0, 0, 0) 60%);
-    }
-}
-
-
-/* =========================================================
-   REDUCED MOTION
-   ========================================================= */
-
-@media (prefers-reduced-motion: reduce) {
-
-    html {
-        scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
-        transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-    }
+  .top10-rank {
+    width: clamp(28px, 8vw, 46px);
+    font-size: clamp(2.4rem, 12vw, 4rem);
+    -webkit-text-stroke: 1.5px #4a4a55;
+    transform: translateX(8px);
+  }
 }
