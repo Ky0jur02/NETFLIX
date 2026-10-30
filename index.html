@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STREAMFLIX - Movies and TV shows</title>
+<meta name="description" content="STREAMFLIX is a fictional streaming platform built for a school project.">
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%23e5303f'/><path d='M38 28l36 22-36 22z' fill='white'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+<script src="script.js" defer></script>
+</head>
+<body>
+
+<!-- ============================================================
+     1. AUTH SCREEN (Log In / Sign Up)
+     Accounts live only in this browser's localStorage - classroom demo only.
+     ============================================================ -->
+<div class="auth-screen" id="auth-screen">
+  <div class="auth-bg"></div>
+  <div class="auth-box">
+    <a class="logo auth-logo" href="#">STREAMFLIX</a>
+
+    <form class="auth-form" id="login-form">
+      <h1>Sign in</h1>
+      <p class="auth-error" id="login-error" hidden></p>
+      <label class="field"><span>Username</span><input type="text" id="login-username" autocomplete="username" required></label>
+      <label class="field"><span>Password</span><input type="password" id="login-password" autocomplete="current-password" required></label>
+      <button class="btn btn-primary auth-submit" type="submit">Sign In</button>
+      <button class="btn btn-secondary auth-submit" type="button" id="guest-btn">Continue as Guest</button>
+      <p class="auth-switch">New to STREAMFLIX? <button type="button" class="link-btn" id="show-signup">Create an account</button></p>
+    </form>
+
+    <form class="auth-form" id="signup-form" hidden>
+      <h1>Create your account</h1>
+      <p class="auth-error" id="signup-error" hidden></p>
+      <label class="field"><span>Email</span><input type="email" id="signup-email" autocomplete="email" required></label>
+      <label class="field"><span>Username</span><input type="text" id="signup-username" autocomplete="username" required></label>
+      <label class="field"><span>Password</span><input type="password" id="signup-password" autocomplete="new-password" minlength="4" required></label>
+      <button class="btn btn-primary auth-submit" type="submit">Create Account</button>
+      <p class="auth-switch">Already have an account? <button type="button" class="link-btn" id="show-login">Sign in</button></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============================================================
+     2. WHO'S WATCHING SCREEN
+     ============================================================ -->
+<div class="who-screen" id="who-screen">
+  <div class="who-inner">
+    <h1>Who's watching?</h1>
+    <div class="profile-grid" id="who-grid"></div>
+    <button class="btn btn-secondary manage-link" id="manage-profiles-link">Manage Profiles</button>
+  </div>
+</div>
+
+<!-- ============================================================
+     3. MAIN APP
+     ============================================================ -->
+<div class="app" id="app">
+
+  <!-- ---------------- NAVBAR ---------------- -->
+  <header class="navbar" id="navbar">
+    <div class="nav-left">
+      <a href="#" class="logo" data-page="home">STREAMFLIX</a>
+      <nav class="nav-links" id="nav-links" aria-label="Main navigation">
+        <a href="#" data-page="home" data-i18n="navHome">Home</a>
+        <a href="#" data-page="movies" data-i18n="navMovies">Movies</a>
+        <a href="#" data-page="tv-shows" data-i18n="navTv">TV Shows</a>
+        <a href="#" data-page="new-popular" data-i18n="navNew">New &amp; Popular</a>
+        <a href="#" data-page="my-list" data-i18n="navMyList">My List</a>
+      </nav>
+    </div>
+
+    <div class="nav-right">
+      <div class="search-box" id="search-box">
+        <input type="search" id="search-input" placeholder="Titles, genres, actors, years" aria-label="Search" autocomplete="off">
+        <button class="search-btn" id="search-btn" aria-label="Search" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"></circle><line x1="15.5" y1="15.5" x2="21" y2="21"></line></svg>
+        </button>
+      </div>
+
+      <!-- Language quick menu -->
+      <div class="icon-menu-wrap">
+        <button class="icon-nav-btn" id="lang-btn" aria-label="Language" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18 14 14 0 0 1 0-18z"></path></svg>
+        </button>
+        <div class="dropdown-panel" id="lang-dropdown"></div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="icon-menu-wrap">
+        <button class="icon-nav-btn" id="notif-btn" aria-label="Notifications" aria-expanded="false">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+          <span class="badge" id="notif-badge" hidden>0</span>
+        </button>
+        <div class="dropdown-panel dropdown-panel-wide" id="notif-dropdown">
+          <div class="dropdown-panel-head">
+            <span>Notifications</span>
+            <button type="button" id="notif-mark-all">Mark all read</button>
+          </div>
+          <div id="notif-list"></div>
+        </div>
+      </div>
+
+      <!-- Profile -->
+      <div class="icon-menu-wrap">
+        <button class="profile-btn" id="profile-btn" aria-label="Account menu" aria-expanded="false">
+          <span id="profile-avatar">S</span>
+          <span class="kids-badge" id="profile-kids-badge" hidden>KIDS</span>
+        </button>
+        <div class="dropdown-panel" id="profile-dropdown">
+          <p class="dropdown-name" id="dropdown-name">Guest</p>
+          <button type="button" data-action="switch-profile">Switch Profile</button>
+          <button type="button" data-page="manage-profiles">Manage Profiles</button>
+          <button type="button" data-page="account" class="acct-only">Account</button>
+          <button type="button" data-page="plans" class="acct-only">Plans &amp; Subscription</button>
+          <button type="button" data-action="open-lang">Language</button>
+          <button type="button" data-action="open-subtitles" class="acct-only">Subtitle Settings</button>
+          <button type="button" data-action="open-playback" class="acct-only">Playback Settings</button>
+          <button type="button" data-page="help">Help Center</button>
+          <button type="button" id="signout-btn">Sign Out</button>
+        </div>
+      </div>
+
+      <button class="hamburger" id="menu-toggle" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================= HOME ================= -->
+    <div class="page active" id="page-home">
+      <section class="hero" id="hero">
+        <div class="hero-slide" id="hero-slide-a"><div class="hero-bg"></div></div>
+        <div class="hero-slide" id="hero-slide-b"><div class="hero-bg"></div></div>
+        <div class="hero-content">
+          <span class="hero-badge" id="hero-badge">Featured</span>
+          <h1 class="hero-title" id="hero-title">Loading...</h1>
+          <div class="meta-row">
+            <span class="pill pill-outline" id="hero-maturity"></span>
+            <span id="hero-year"></span>
+            <span id="hero-runtime"></span>
+            <span class="rating" id="hero-rating"></span>
+            <span class="pill" id="hero-genre"></span>
+          </div>
+          <p class="hero-desc" id="hero-desc"></p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" id="hero-play" data-action="play"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"></path></svg> Play</button>
+            <button class="btn btn-secondary" id="hero-info" data-action="info">More Info</button>
+          </div>
+        </div>
+        <div class="hero-dots" id="hero-dots"></div>
+      </section>
+      <div class="content"><div id="home-rows"></div></div>
+    </div>
+
+    <!-- ================= MOVIES ================= -->
+    <div class="page" id="page-movies">
+      <div class="page-header"><h1 data-i18n="navMovies">Movies</h1><p>Feature films across every genre, 2020-2026.</p></div>
+      <div class="content content-flat" id="movies-rows"></div>
+    </div>
+
+    <!-- ================= TV SHOWS ================= -->
+    <div class="page" id="page-tv-shows">
+      <div class="page-header"><h1 data-i18n="navTv">TV Shows</h1><p>Series, one episode at a time.</p></div>
+      <div class="content content-flat" id="tv-rows"></div>
+    </div>
+
+    <!-- ================= NEW & POPULAR ================= -->
+    <div class="page" id="page-new-popular">
+      <div class="page-header"><h1>New &amp; Popular</h1><p>Fresh arrivals and what's coming next.</p></div>
+      <div class="content content-flat" id="new-popular-rows"></div>
+    </div>
+
+    <!-- ================= MY LIST ================= -->
+    <div class="page" id="page-my-list">
+      <div class="page-header"><h1 data-i18n="navMyList">My List</h1><p>Titles you've saved to watch later.</p></div>
+      <div class="content content-flat">
+        <div class="results-grid" id="my-list-grid"></div>
+        <div class="empty-message" id="my-list-empty" hidden>Nothing here yet. Tap the <strong>+</strong> on any title to add it to your list.</div>
+      </div>
+    </div>
+
+    <!-- ================= PLANS & SUBSCRIPTION ================= -->
+    <div class="page" id="page-plans">
+      <div class="page-header"><h1>Plans &amp; Subscription</h1><p>Fictional plans for this project - no real payments are ever processed.</p></div>
+      <div class="content content-flat">
+        <div class="plans-grid" id="plans-grid"></div>
+
+        <div class="billing-card">
+          <h2>Billing</h2>
+          <div class="billing-grid">
+            <label class="field"><span>Payment method</span>
+              <select id="billing-card-select">
+                <option value="visa-4242">Visa •••• 4242</option>
+                <option value="mc-8891">Mastercard •••• 8891</option>
+                <option value="amex-1005">Amex •••• 1005</option>
+              </select>
+            </label>
+            <label class="field"><span>Billing name</span><input type="text" id="billing-name"></label>
+            <label class="field"><span>Billing address</span><input type="text" id="billing-address"></label>
+          </div>
+          <p class="billing-status">Status: <strong id="billing-status">Active</strong> &nbsp;•&nbsp; Next billing date: <strong id="billing-date">-</strong></p>
+          <div class="billing-actions">
+            <button class="btn btn-secondary" id="billing-save">Save Billing Info</button>
+            <button class="btn btn-secondary danger" id="cancel-sub-btn">Cancel Subscription</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= ACCOUNT SETTINGS ================= -->
+    <div class="page" id="page-account">
+      <div class="page-header"><h1>Account</h1><p>Everything here is simulated and saved only in this browser.</p></div>
+      <div class="content content-flat settings-layout">
+
+        <section class="settings-card" id="account-section">
+          <h2>Account</h2>
+          <form id="account-form" class="settings-form">
+            <label class="field"><span>Name</span><input type="text" id="account-name"></label>
+            <label class="field"><span>Email</span><input type="email" id="account-email"></label>
+            <label class="field"><span>Phone number</span><input type="tel" id="account-phone"></label>
+            <label class="field"><span>Password</span><input type="password" id="account-password" placeholder="Demo password - not a real credential"></label>
+            <button class="btn btn-primary" type="submit">Save Account Info</button>
+          </form>
+        </section>
+
+        <section class="settings-card" id="membership-section">
+          <h2>Membership</h2>
+          <p>Current plan: <strong id="membership-plan-name">-</strong></p>
+          <p>Renews: <strong id="membership-renew-date">-</strong></p>
+          <button class="btn btn-secondary" data-page="plans">Manage Plan</button>
+        </section>
+
+        <section class="settings-card" id="profiles-section">
+          <h2>Profiles</h2>
+          <p>Add, edit, or remove the family profiles on this account.</p>
+          <button class="btn btn-secondary" data-page="manage-profiles">Manage Profiles</button>
+        </section>
+
+        <section class="settings-card" id="playback-section">
+          <h2>Playback</h2>
+          <form id="playback-form" class="settings-form">
+            <label class="toggle-row"><input type="checkbox" id="playback-autoplay"><span>Autoplay next episode</span></label>
+            <label class="field"><span>Video quality</span>
+              <select id="playback-quality"><option value="auto">Auto</option><option value="4k">4K / HDR</option><option value="hd">Full HD</option><option value="sd">SD - data saver</option></select>
+            </label>
+            <label class="field"><span>Data usage</span>
+              <select id="playback-data"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select>
+            </label>
+            <button class="btn btn-primary" type="submit">Save Playback Settings</button>
+          </form>
+        </section>
+
+        <section class="settings-card" id="language-section">
+          <h2>Language</h2>
+          <form id="language-form" class="settings-form">
+            <label class="field"><span>Interface language</span><select id="language-interface"></select></label>
+            <label class="field"><span>Audio language</span><select id="language-audio"></select></label>
+            <label class="field"><span>Subtitle language</span><select id="language-subtitle"><option value="off">Off</option></select></label>
+            <button class="btn btn-primary" type="submit">Save Language Settings</button>
+          </form>
+        </section>
+
+        <section class="settings-card" id="privacy-section">
+          <h2>Privacy</h2>
+          <p>Viewing activity for this profile:</p>
+          <ul class="activity-list" id="activity-list"></ul>
+          <button class="btn btn-secondary danger" id="clear-history-btn">Clear Viewing History</button>
+        </section>
+
+        <section class="settings-card" id="security-section">
+          <h2>Security</h2>
+          <p>This signs the demo account out on this device and clears the local session.</p>
+          <button class="btn btn-secondary danger" id="signout-all-btn">Sign Out of All Devices</button>
+        </section>
+      </div>
+    </div>
+
+    <!-- ================= MANAGE PROFILES ================= -->
+    <div class="page" id="page-manage-profiles">
+      <div class="page-header"><h1>Manage Profiles</h1><p>Up to 5 profiles per account.</p></div>
+      <div class="content content-flat">
+        <div class="profile-grid manage-grid" id="manage-profiles-grid"></div>
+      </div>
+    </div>
+
+    <!-- ================= HELP CENTER ================= -->
+    <div class="page" id="page-help">
+      <div class="page-header"><h1>Help Center</h1><p>Answers to common (fictional) questions about STREAMFLIX.</p></div>
+      <div class="content content-flat">
+        <div class="faq-list" id="faq-list"></div>
+      </div>
+    </div>
+
+    <!-- ================= SEARCH RESULTS ================= -->
+    <section class="search-results" id="search-results" aria-live="polite">
+      <h2 class="results-title" id="results-title"></h2>
+
+      <div class="filter-bar">
+        <div class="filter-group" id="filter-type"></div>
+        <div class="filter-group" id="filter-genre"></div>
+        <div class="filter-group" id="filter-year"></div>
+      </div>
+
+      <p class="results-count" id="results-count"></p>
+      <div class="results-grid" id="results-grid"></div>
+      <div class="no-results" id="no-results" hidden><h3>No results found</h3><p id="no-results-text"></p></div>
+    </section>
+
+  </main>
+
+  <footer class="footer"><p>STREAMFLIX is a fictional demo made for a school project. All titles, cast, and posters are invented; posters are random placeholder photos from picsum.photos. Nothing here is billed or stored anywhere but this browser.</p></footer>
+</div>
+
+<!-- ============================================================
+     4. MODALS
+     ============================================================ -->
+
+<!-- Info / details modal -->
+<div class="modal" id="info-modal" role="dialog" aria-modal="true" aria-labelledby="info-title">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-box modal-box-wide">
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="modal-banner" id="info-banner">
+      <img class="modal-poster" id="info-poster" alt="">
+    </div>
+    <div class="modal-body">
+      <h2 class="modal-title" id="info-title"></h2>
+      <div class="meta-row">
+        <span class="pill pill-outline" id="info-maturity"></span>
+        <span id="info-year"></span>
+        <span id="info-runtime"></span>
+        <span class="rating" id="info-rating"></span>
+      </div>
+      <p class="modal-genres" id="info-genres"></p>
+      <p class="modal-desc" id="info-description"></p>
+
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="info-play" data-action="play"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M7 4l13 8-13 8z" fill="currentColor"></path></svg> Play</button>
+        <button class="btn btn-secondary list-btn" id="info-list" data-action="list">+ My List</button>
+        <button class="btn btn-secondary" id="info-trailer">Trailer</button>
+      </div>
+
+      <dl class="facts facts-wide">
+        <div><dt>Cast</dt><dd id="info-cast"></dd></div>
+        <div><dt>Director</dt><dd id="info-director"></dd></div>
+        <div><dt>Audio</dt><dd id="info-audio"></dd></div>
+        <div><dt>Subtitles</dt><dd id="info-subs"></dd></div>
+      </dl>
+
+      <div class="episodes-block" id="episodes-block" hidden>
+        <div class="episodes-head">
+          <h3>Episodes</h3>
+          <select id="season-select"></select>
+        </div>
+        <div id="episodes-list"></div>
+      </div>
+
+      <div class="more-like-block">
+        <h3>More Like This</h3>
+        <div class="row-track" id="more-like-track"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Video player modal -->
+<div class="modal" id="player-modal" role="dialog" aria-modal="true" aria-labelledby="player-title">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-box modal-box-wide">
+    <button class="modal-close" data-close aria-label="Close player">&times;</button>
+    <div class="player" id="player">
+      <div class="player-screen" id="player-screen">
+        <p class="player-flag" id="player-flag">Now Playing</p>
+        <h2 class="player-title" id="player-title">Title</h2>
+        <button class="player-big-play" id="player-big-play" aria-label="Play">
+          <svg viewBox="0 0 24 24" width="30" height="30"><path d="M7 4l13 8-13 8z" fill="currentColor"></path></svg>
+        </button>
+      </div>
+
+      <div class="player-controls">
+        <div class="player-bar" id="player-bar"><div class="player-fill" id="player-fill"></div></div>
+        <div class="player-buttons-row">
+          <div class="player-buttons-left">
+            <button class="player-icon-btn" id="player-toggle" aria-label="Play/Pause">
+              <svg id="icon-play" viewBox="0 0 24 24" width="18" height="18"><path d="M7 4l13 8-13 8z" fill="currentColor"></path></svg>
+              <svg id="icon-pause" viewBox="0 0 24 24" width="18" height="18" hidden><path d="M6 4h4v16H6zM14 4h4v16h-4z" fill="currentColor"></path></svg>
+            </button>
+            <button class="player-icon-btn" id="player-skip-back" aria-label="Back 10 seconds">10&#8249;</button>
+            <button class="player-icon-btn" id="player-skip-fwd" aria-label="Forward 10 seconds">10&#8250;</button>
+            <button class="player-icon-btn" id="player-prev-ep" aria-label="Previous episode" hidden>&#8249;&#8249;</button>
+            <button class="player-icon-btn" id="player-next-ep" aria-label="Next episode" hidden>&#8250;&#8250;</button>
+            <span class="player-time"><span id="player-current-time">0:00</span> / <span id="player-duration">0:00</span></span>
+          </div>
+          <div class="player-buttons-right">
+            <button class="player-icon-btn" id="player-mute" aria-label="Mute">&#128266;</button>
+            <input type="range" id="player-volume" class="player-volume" min="0" max="100" value="80" aria-label="Volume">
+            <button class="player-icon-btn" id="player-settings-btn" aria-label="Settings">&#9881;</button>
+            <button class="player-icon-btn" id="player-fullscreen" aria-label="Fullscreen">&#9974;</button>
+          </div>
+        </div>
+
+        <div class="player-settings-menu" id="player-settings-menu" hidden>
+          <div class="settings-col">
+            <h4>Playback Speed</h4>
+            <div id="speed-options" class="chip-list"></div>
+          </div>
+          <div class="settings-col">
+            <h4>Audio</h4>
+            <select id="player-audio-select"></select>
+          </div>
+          <div class="settings-col">
+            <h4>Subtitles</h4>
+            <select id="player-subs-select"><option value="off">Off</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add / Edit profile modal -->
+<div class="modal" id="profile-modal" role="dialog" aria-modal="true" aria-labelledby="profile-modal-title">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-box">
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <h2 class="modal-title" id="profile-modal-title">Add Profile</h2>
+      <form id="profile-form">
+        <div class="avatar-picker">
+          <div class="avatar-big" id="profile-modal-avatar">?</div>
+          <div class="avatar-colors" id="profile-modal-colors"></div>
+        </div>
+        <label class="field"><span>Name</span><input type="text" id="profile-name-field" required maxlength="18"></label>
+        <label class="toggle-row"><input type="checkbox" id="profile-kids-field"><span>Kids Profile</span></label>
+        <label class="field"><span>Language</span><select id="profile-language-field"></select></label>
+        <label class="field"><span>Maturity preference</span>
+          <select id="profile-maturity-field">
+            <option value="kids">Kids only (G, PG)</option>
+            <option value="teen">Teen and under (PG-13, TV-14)</option>
+            <option value="all" selected>All maturity ratings</option>
+          </select>
+        </label>
+        <label class="toggle-row"><input type="checkbox" id="profile-autoplay-field" checked><span>Autoplay next episode</span></label>
+        <label class="toggle-row"><input type="checkbox" id="profile-subtitles-field"><span>Subtitles on by default</span></label>
+        <div class="modal-actions">
+          <button class="btn btn-primary" type="submit">Save Profile</button>
+          <button class="btn btn-secondary danger" type="button" id="profile-delete-btn" hidden>Delete Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Generic confirm modal (plan changes, cancel subscription, delete profile, clear history) -->
+<div class="modal" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-box modal-box-small">
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <h2 class="modal-title" id="confirm-title">Are you sure?</h2>
+      <p id="confirm-message"></p>
+      <div class="modal-actions">
+        <button class="btn btn-primary" id="confirm-yes">Confirm</button>
+        <button class="btn btn-secondary" data-close>Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+</body>
+</html>
